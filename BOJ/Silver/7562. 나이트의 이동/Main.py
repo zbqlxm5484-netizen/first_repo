@@ -13,6 +13,8 @@ for tc in range(1,int(input())+1) :
         i,j = dq.popleft()
         if i == c and j == d :
             print(visited[i][j]-1)
+            break
+
         for ni,nj in [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]] :
             di , dj = i + ni, j +nj
             if 0 <= di < n and 0 <= dj < n : 
