@@ -1,110 +1,40 @@
-n = int(input())
+import sys
+input = sys.stdin.readline
+
+n = int(input().strip())
 board = [list(input().strip()) for _ in range(n)]
 
-temp = [row[:] for row in board]
-
+# 적록색약 보드 (R -> G)
+cb = [row[:] for row in board]
 for i in range(n):
     for j in range(n):
-        if temp[i][j] == "R" :
-            temp[i][j] = "G"
-size = 0
-dsize = 0
-stack = []
-visited = [[0]*n for _ in range(n)]
-dvisited = [[0]*n for _ in range(n)]
-for i in range(n):
-    for j in range(n):
-        if board[i][j] == "R" and not visited[i][j]:
-            stack.append((i,j))
-            visited[i][j] = 1
-            
+        if cb[i][j] == 'R':
+            cb[i][j] = 'G'
 
-            
-            while stack :
-                r,c = stack.pop()
+dirs = ((1,0), (-1,0), (0,1), (0,-1))
 
-                for ni ,nj in [[0,1],[1,0],[0,-1],[-1,0]] :
-                    di,dj = ni+r,nj+c
-                    if 0 <= di < n and 0 <= dj < n :
-                        if board[di][dj] == "R" and not visited[di][dj] :
-                            visited[di][dj] = 1
-                            stack.append((di,dj))
-            else :
-                size += 1
-for i in range(n):
-    for j in range(n):
-        if board[i][j] == "G" and not visited[i][j]:
-            stack.append((i,j))
-            visited[i][j] = 1
-            
+def count_regions(g):
+    visited = [[False]*n for _ in range(n)]
+    cnt = 0
 
-            
-            while stack :
-                r,c = stack.pop()
+    for i in range(n):
+        for j in range(n):
+            if visited[i][j]:
+                continue
 
-                for ni ,nj in [[0,1],[1,0],[0,-1],[-1,0]] :
-                    di,dj = ni+r,nj+c
-                    if 0 <= di < n and 0 <= dj < n :
-                        if board[di][dj] == "G" and not visited[di][dj] :
-                            visited[di][dj] = 1
-                            stack.append((di,dj))
-            else :
-                size += 1
-for i in range(n):
-    for j in range(n):
-        if board[i][j] == "B" and not visited[i][j]:
-            stack.append((i,j))
-            visited[i][j] = 1
-            
+            color = g[i][j]
+            stack = [(i, j)]
+            visited[i][j] = True
+            cnt += 1
 
-            
-            while stack :
-                r,c = stack.pop()
+            while stack:
+                r, c = stack.pop()
+                for dr, dc in dirs:
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < n and 0 <= nc < n:
+                        if not visited[nr][nc] and g[nr][nc] == color:
+                            visited[nr][nc] = True
+                            stack.append((nr, nc))
+    return cnt
 
-                for ni ,nj in [[0,1],[1,0],[0,-1],[-1,0]] :
-                    di,dj = ni+r,nj+c
-                    if 0 <= di < n and 0 <= dj < n :
-                        if board[di][dj] == "B" and not visited[di][dj] :
-                            visited[di][dj] = 1
-                            stack.append((di,dj))
-            else :
-                size += 1
-for i in range(n):
-    for j in range(n):
-        if temp[i][j] == "B" and not dvisited[i][j]:
-            stack.append((i,j))
-            dvisited[i][j] = 1
-            
-
-            
-            while stack :
-                r,c = stack.pop()
-
-                for ni ,nj in [[0,1],[1,0],[0,-1],[-1,0]] :
-                    di,dj = ni+r,nj+c
-                    if 0 <= di < n and 0 <= dj < n :
-                        if temp[di][dj] == "B" and not dvisited[di][dj] :
-                            dvisited[di][dj] = 1
-                            stack.append((di,dj))
-            else :
-                dsize += 1                
-for i in range(n):
-    for j in range(n):
-        if temp[i][j] == "G" and not dvisited[i][j]:
-            stack.append((i,j))
-            dvisited[i][j] = 1
-            
-
-            
-            while stack :
-                r,c = stack.pop()
-
-                for ni ,nj in [[0,1],[1,0],[0,-1],[-1,0]] :
-                    di,dj = ni+r,nj+c
-                    if 0 <= di < n and 0 <= dj < n :
-                        if temp[di][dj] == "G" and not dvisited[di][dj] :
-                            dvisited[di][dj] = 1
-                            stack.append((di,dj))
-            else :
-                dsize += 1                
-print(size, dsize)
+print(count_regions(board), count_regions(cb))
